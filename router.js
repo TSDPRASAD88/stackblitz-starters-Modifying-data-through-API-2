@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const MenuItem = require("./schema"); // Correct model import
+const MenuItem = require("./schema"); 
 
-// PUT: Update an existing menu item by ID
+
 router.put("/put_item/:id", async (req, res) => {
     try {
         const { id } = req.params;
@@ -11,11 +11,14 @@ router.put("/put_item/:id", async (req, res) => {
         }
 
         const { name, description, price } = req.body;
-        
+        if (!name || !description || !price) {
+            return res.status(400).send({ msg: "All fields (name, description, price) are required" });
+        }
+
         const updatedItem = await MenuItem.findByIdAndUpdate(
             id,
             { name, description, price },
-            { new: true } // Return the updated document
+            { new: true }
         );
 
         if (!updatedItem) {
@@ -30,10 +33,10 @@ router.put("/put_item/:id", async (req, res) => {
     }
 });
 
-// DELETE: Remove a menu item by ID
+
 router.delete("/delete_item/:id", async (req, res) => {
     try {
-        const { id } = req.params; // Get ID from params
+        const { id } = req.params;
         if (!id) {
             return res.status(400).send({ msg: "Please provide an ID" });
         }
@@ -50,7 +53,8 @@ router.delete("/delete_item/:id", async (req, res) => {
         return res.status(500).send({ msg: "Something went wrong", error });
     }
 });
-router.post("/menuItems", async (req, res) => {
+
+router.post("/menuItems_are", async (req, res) => {
     try {
       const { name, description, price } = req.body;
       if (!name || !description || !price) {
@@ -72,8 +76,8 @@ router.post("/menuItems", async (req, res) => {
         return res.status(200).json(items);
     } catch (error) {
         console.error("Error fetching menu:", error);
-        return res.status(500).json({ msg: "Internal server error" });
-    }
+        return res.status(500).json({ msg: "Internal server error" });
+   }
   });
 
 module.exports = router;

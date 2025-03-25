@@ -1,19 +1,25 @@
 const express = require('express');
-const { resolve } = require('path');
-const dotenv = require("dotenv").config();
-const MenuItem = require("./schema");
-const mongoose=require("mongoose");
+const mongoose = require('mongoose'); 
+
+const router = require('./router');
+require("dotenv").config(); 
 
 const app = express();
 const port = 3010;
- 
+
 app.use(express.static('static'));
+app.use(express.json()); 
+
+app.use("/itemDetails", router);
 
 app.get('/', (req, res) => {
   res.sendFile(resolve(__dirname, 'pages/index.html'));
 });
 
-app.listen(port, async () => {
-  await mongoose.connect(process.env.MongoDB_URL);
+mongoose.connect(process.env.MongoDB_URL)
+  .then(() => console.log("MongoDB connected successfully"))
+  .catch(err => console.error("MongoDB connection error:", err));
+
+app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });
